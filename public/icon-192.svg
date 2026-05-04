@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" fill="#15803d"/>
+  <circle cx="96" cy="96" r="68" fill="#fef9f3" stroke="#e7d5b8" stroke-width="3"/>
+  <circle cx="96" cy="96" r="60" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="36" y1="96" x2="156" y2="96" stroke="#cbd5e1" stroke-width="3"/>
+  <line x1="96" y1="36" x2="96" y2="156" stroke="#cbd5e1" stroke-width="3"/>
+  <text x="96" y="180" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#ffffff">PRATO</text>
+</svg>

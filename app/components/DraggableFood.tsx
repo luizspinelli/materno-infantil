@@ -10,20 +10,46 @@ type Props = {
   origem: "pool" | "prato";
   size?: number;
   showName?: boolean;
+  onClick?: (alimento: Alimento) => void;
 };
 
-export function DraggableFood({ alimento, origem, size = 64, showName = true }: Props) {
+export function DraggableFood({
+  alimento,
+  origem,
+  size = 64,
+  showName = true,
+  onClick,
+}: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `${origem}:${alimento.id}`,
     data: { alimento, origem },
+    disabled: !!onClick, // se onClick está ativo (modo descoberta), desativa drag
   });
 
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.4 : 1,
-    cursor: isDragging ? "grabbing" : "grab",
+    cursor: onClick ? "pointer" : isDragging ? "grabbing" : "grab",
     touchAction: "none",
   };
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={() => onClick(alimento)}
+        className="flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-emerald-300 transition-all border border-slate-200 cursor-pointer"
+        title={`Tocar para detalhes de ${alimento.nome}`}
+      >
+        <FoodIcon alimento={alimento} size={size} />
+        {showName && (
+          <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">
+            {alimento.nome}
+          </span>
+        )}
+      </button>
+    );
+  }
 
   return (
     <div

@@ -8,9 +8,10 @@ import { DraggableFood } from "./DraggableFood";
 type Props = {
   zona: Categoria;
   alimentos: Alimento[];
+  onAlimentoClick?: (alimento: Alimento) => void;
 };
 
-export function PlateZone({ zona, alimentos }: Props) {
+export function PlateZone({ zona, alimentos, onAlimentoClick }: Props) {
   const { setNodeRef, isOver } = useDroppable({
     id: `zona:${zona}`,
     data: { zona },
@@ -29,7 +30,14 @@ export function PlateZone({ zona, alimentos }: Props) {
       }}
     >
       {alimentos.map((a) => (
-        <DraggableFood key={a.id} alimento={a} origem="prato" size={56} showName={false} />
+        <DraggableFood
+          key={a.id}
+          alimento={a}
+          origem="prato"
+          size={56}
+          showName={false}
+          onClick={onAlimentoClick}
+        />
       ))}
     </div>
   );

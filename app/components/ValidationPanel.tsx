@@ -7,6 +7,7 @@ import { FoodIcon } from "./FoodIcon";
 type Props = {
   resultado: Resultado;
   onClose: () => void;
+  onTentarNovamente?: () => void;
 };
 
 const ESTILO_NIVEL: Record<NivelPrato, { titulo: string; cor: string; bg: string; icone: string }> = {
@@ -17,7 +18,7 @@ const ESTILO_NIVEL: Record<NivelPrato, { titulo: string; cor: string; bg: string
   vazio: { titulo: "Prato Vazio", cor: "#475569", bg: "#f1f5f9", icone: "·" },
 };
 
-export function ValidationPanel({ resultado, onClose }: Props) {
+export function ValidationPanel({ resultado, onClose, onTentarNovamente }: Props) {
   const { itens, grupos, apropriados, inapropriados, total, mensagem, nivel } = resultado;
   const estilo = ESTILO_NIVEL[nivel];
 
@@ -158,7 +159,18 @@ export function ValidationPanel({ resultado, onClose }: Props) {
           </div>
         </div>
 
-        <div className="mt-5 flex justify-end">
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          {onTentarNovamente && (
+            <button
+              onClick={() => {
+                onTentarNovamente();
+                onClose();
+              }}
+              className="rounded-lg border border-emerald-600 bg-white px-5 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+            >
+              Tentar novamente
+            </button>
+          )}
           <button
             onClick={onClose}
             className="rounded-lg bg-emerald-600 px-6 py-2 text-sm font-semibold text-white hover:bg-emerald-700"

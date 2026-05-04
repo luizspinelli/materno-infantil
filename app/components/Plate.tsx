@@ -8,12 +8,12 @@ type Props = {
     Record<Categoria, Alimento[]>,
     "cereais" | "feijoes" | "carnes-ovos" | "legumes-verduras"
   >;
+  onAlimentoClick?: (alimento: Alimento) => void;
 };
 
-export function Plate({ alimentosPorZona }: Props) {
+export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
   return (
     <div className="relative h-full w-full" style={{ aspectRatio: "1 / 1" }}>
-      {/* Prato circular dividido em 4 quadrantes */}
       <svg
         viewBox="0 0 600 600"
         className="absolute inset-0 h-full w-full drop-shadow-lg"
@@ -28,7 +28,6 @@ export function Plate({ alimentosPorZona }: Props) {
             <stop offset="100%" stopColor="#f1f5f9" />
           </radialGradient>
         </defs>
-        {/* top-left — Cereais */}
         <path
           d="M 300 300 L 300 40 A 260 260 0 0 0 40 300 Z"
           fill="url(#cavityGrad)"
@@ -36,7 +35,6 @@ export function Plate({ alimentosPorZona }: Props) {
           strokeWidth="3"
           strokeLinejoin="round"
         />
-        {/* top-right — Feijões */}
         <path
           d="M 300 300 L 560 300 A 260 260 0 0 0 300 40 Z"
           fill="url(#cavityGrad)"
@@ -44,7 +42,6 @@ export function Plate({ alimentosPorZona }: Props) {
           strokeWidth="3"
           strokeLinejoin="round"
         />
-        {/* bottom-left — Legumes e verduras */}
         <path
           d="M 300 300 L 40 300 A 260 260 0 0 0 300 560 Z"
           fill="url(#cavityGrad)"
@@ -52,7 +49,6 @@ export function Plate({ alimentosPorZona }: Props) {
           strokeWidth="3"
           strokeLinejoin="round"
         />
-        {/* bottom-right — Carnes e ovos */}
         <path
           d="M 300 300 L 300 560 A 260 260 0 0 0 560 300 Z"
           fill="url(#cavityGrad)"
@@ -63,19 +59,34 @@ export function Plate({ alimentosPorZona }: Props) {
         <ellipse cx="170" cy="160" rx="55" ry="22" fill="#ffffff" opacity="0.7" />
       </svg>
 
-      {/* 4 zonas droppable */}
       <div className="absolute inset-0">
         <div className="absolute left-[8%] top-[8%] h-[42%] w-[42%]">
-          <PlateZone zona="cereais" alimentos={alimentosPorZona.cereais} />
+          <PlateZone
+            zona="cereais"
+            alimentos={alimentosPorZona.cereais}
+            onAlimentoClick={onAlimentoClick}
+          />
         </div>
         <div className="absolute right-[8%] top-[8%] h-[42%] w-[42%]">
-          <PlateZone zona="feijoes" alimentos={alimentosPorZona.feijoes} />
+          <PlateZone
+            zona="feijoes"
+            alimentos={alimentosPorZona.feijoes}
+            onAlimentoClick={onAlimentoClick}
+          />
         </div>
         <div className="absolute left-[8%] bottom-[8%] h-[42%] w-[42%]">
-          <PlateZone zona="legumes-verduras" alimentos={alimentosPorZona["legumes-verduras"]} />
+          <PlateZone
+            zona="legumes-verduras"
+            alimentos={alimentosPorZona["legumes-verduras"]}
+            onAlimentoClick={onAlimentoClick}
+          />
         </div>
         <div className="absolute right-[8%] bottom-[8%] h-[42%] w-[42%]">
-          <PlateZone zona="carnes-ovos" alimentos={alimentosPorZona["carnes-ovos"]} />
+          <PlateZone
+            zona="carnes-ovos"
+            alimentos={alimentosPorZona["carnes-ovos"]}
+            onAlimentoClick={onAlimentoClick}
+          />
         </div>
       </div>
     </div>
