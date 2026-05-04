@@ -76,9 +76,10 @@ export default function Game() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    // delay maior permite que toques rápidos viajem pro scroll do pool;
-    // só toques mantidos por 250ms iniciam o drag.
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
+    // Long-press de 300ms pra iniciar drag em touch. Se o usuário mover
+    // mais de 15px durante esse delay, o gesto é cancelado e o navegador
+    // assume scroll/tap normal.
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 15 } })
   );
 
   const idsNoPrato = useMemo(

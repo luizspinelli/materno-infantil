@@ -30,9 +30,10 @@ export function DraggableFood({
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.4 : 1,
     cursor: onClick ? "pointer" : isDragging ? "grabbing" : "grab",
-    // pan-y permite scroll vertical do container; o TouchSensor usa delay
-    // pra distinguir entre scroll (toque rápido) e drag (long press).
-    touchAction: "pan-y",
+    // manipulation deixa o navegador tratar gestos comuns (scroll, tap),
+    // só interceptando double-tap-zoom. O TouchSensor com delay e
+    // tolerance decide se o gesto vira drag ou scroll.
+    touchAction: "manipulation",
   };
 
   if (onClick) {
