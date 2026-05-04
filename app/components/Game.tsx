@@ -194,11 +194,17 @@ export default function Game() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <main className="min-h-screen md:h-screen w-screen md:overflow-hidden bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50">
-        <div className="md:h-full w-full flex flex-col px-3 sm:px-4 py-3">
-          {/* Header — empilha em mobile, lado a lado em md+ */}
-          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-3 shrink-0">
-            <div className="flex items-center gap-3">
+      <main
+        className={
+          // Em portrait mobile: deixa o body rolar. Em landscape (qualquer device) e em md+: tela cheia sem scroll do body.
+          "min-h-screen w-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 " +
+          "landscape:h-screen landscape:overflow-hidden md:h-screen md:overflow-hidden"
+        }
+      >
+        <div className="w-full flex flex-col px-2 sm:px-4 py-2 sm:py-3 landscape:h-full md:h-full">
+          {/* Header — sempre lado a lado em landscape, empilhado em portrait mobile */}
+          <header className="flex flex-col landscape:flex-row sm:flex-row landscape:items-center sm:items-center landscape:justify-between sm:justify-between gap-2 sm:gap-4 mb-2 sm:mb-3 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={voltarAoInicio}
                 className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 shrink-0"
@@ -207,37 +213,49 @@ export default function Game() {
                 <span aria-hidden>←</span>
                 <span className="hidden sm:inline">Início</span>
               </button>
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3">
-                <h1 className="text-lg sm:text-2xl font-extrabold text-emerald-700 leading-none">
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 min-w-0">
+                <h1 className="text-base sm:text-2xl font-extrabold text-emerald-700 leading-none truncate">
                   Monte o Prato da Criança
                 </h1>
-                <p className="text-[11px] sm:text-xs text-slate-600">
+                <p className="text-[10px] sm:text-xs text-slate-600 truncate">
                   Crianças de <strong>7 a 8 meses</strong> · Guia Alimentar MS
                 </p>
               </div>
             </div>
-            <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
+            <label className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-600 cursor-pointer select-none shrink-0">
               <input
                 type="checkbox"
                 checked={modoDescoberta}
                 onChange={(e) => setModoDescoberta(e.target.checked)}
                 className="w-4 h-4 accent-emerald-600"
               />
-              Modo descoberta <span className="hidden sm:inline text-slate-400">(toque para ler)</span>
+              Modo descoberta
+              <span className="hidden md:inline text-slate-400">(toque para ler)</span>
             </label>
           </header>
 
-          {/* Container principal — empilha em mobile, lado a lado em md+ */}
-          <div className="flex-1 flex flex-col md:flex-row gap-3 md:gap-4 min-h-0">
-            {/* Coluna prato */}
-            <section className="flex-1 flex flex-col rounded-2xl bg-gradient-to-br from-amber-50/80 to-rose-50/80 border border-amber-200/40 p-3 sm:p-4 shadow-inner min-h-0 min-w-0">
-              <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 min-h-0">
+          {/* Container principal — vertical em portrait, lado a lado em landscape */}
+          <div className="flex-1 flex portrait:flex-col landscape:flex-row gap-2 md:gap-4 min-h-0">
+            {/* Coluna prato — altura fixa em portrait pra não sobrepor o pool */}
+            <section
+              className={
+                "flex flex-col rounded-2xl bg-gradient-to-br from-amber-50/80 to-rose-50/80 " +
+                "border border-amber-200/40 p-2 sm:p-4 shadow-inner min-h-0 min-w-0 " +
+                // Portrait: altura limitada pra deixar espaço pro pool abaixo
+                "portrait:h-[52vh] " +
+                // Landscape: estica com o flex parent
+                "landscape:flex-1"
+              }
+            >
+              <div className="flex-1 flex portrait:flex-col landscape:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 min-h-0">
                 <div
-                  className="shrink-0"
-                  style={{
-                    width: "min(60vh, 75vw, 480px)",
-                    height: "min(60vh, 75vw, 480px)",
-                  }}
+                  className={
+                    "shrink-0 " +
+                    // Portrait: limitado pela altura disponível dentro da section (52vh menos controles)
+                    "portrait:w-[min(40vh,75vw,420px)] portrait:h-[min(40vh,75vw,420px)] " +
+                    // Landscape: limitado pela altura da viewport e largura do container
+                    "landscape:w-[min(70vh,50vw,460px)] landscape:h-[min(70vh,50vw,460px)]"
+                  }
                 >
                   <Plate
                     alimentosPorZona={alimentosPorZona}
@@ -245,11 +263,11 @@ export default function Game() {
                   />
                 </div>
                 <div
-                  className="shrink-0"
-                  style={{
-                    width: "min(22vh, 30vw, 180px)",
-                    height: "min(22vh, 30vw, 180px)",
-                  }}
+                  className={
+                    "shrink-0 " +
+                    "portrait:w-[min(14vh,25vw,150px)] portrait:h-[min(14vh,25vw,150px)] " +
+                    "landscape:w-[min(25vh,18vw,180px)] landscape:h-[min(25vh,18vw,180px)]"
+                  }
                 >
                   <Pot
                     alimentos={alimentosPorZona.frutas}
@@ -258,20 +276,20 @@ export default function Game() {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
-                <span className="text-xs sm:text-sm text-slate-700">
+              <div className="mt-2 sm:mt-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <span className="text-[11px] sm:text-sm text-slate-700">
                   <strong>{totalNoPrato}</strong> alimento(s) no prato
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={resetar}
-                    className="rounded-lg border border-slate-300 bg-white px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    className="rounded-lg border border-slate-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50"
                   >
                     Limpar
                   </button>
                   <button
                     onClick={validar}
-                    className="rounded-lg bg-emerald-600 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold text-white shadow hover:bg-emerald-700"
+                    className="rounded-lg bg-emerald-600 px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow hover:bg-emerald-700"
                   >
                     Validar prato
                   </button>
@@ -279,8 +297,16 @@ export default function Game() {
               </div>
             </section>
 
-            {/* Coluna pool — em mobile altura fixa para o scroll interno funcionar; em md+ estica com o flex parent */}
-            <section className="w-full h-[50vh] md:h-auto md:w-[420px] lg:w-[460px] shrink-0 min-h-0">
+            {/* Coluna pool */}
+            <section
+              className={
+                "shrink-0 min-h-0 " +
+                // Portrait: largura full, altura fixa para scroll interno engajar
+                "portrait:w-full portrait:h-[38vh] " +
+                // Landscape: lado a lado com largura proporcional, estica com o flex
+                "landscape:w-[40%] landscape:max-w-[460px] landscape:min-w-[260px] landscape:h-auto"
+              }
+            >
               <Pool
                 alimentos={alimentosPool}
                 onAlimentoClick={modoDescoberta ? handleAlimentoClick : undefined}
