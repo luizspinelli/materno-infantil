@@ -15,7 +15,8 @@ import {
 import confetti from "canvas-confetti";
 import { ALIMENTOS, CATEGORIAS, Categoria, validarPrato } from "../lib/foods";
 import { useIdleTimer } from "../lib/useIdleTimer";
-import { registrarValidacao } from "../lib/stats";
+import { useTripleTap } from "../lib/useTripleTap";
+import { lerConfig, registrarValidacao, type AppConfig } from "../lib/stats";
 import { Pool } from "./Pool";
 import { Plate } from "./Plate";
 import { Pot } from "./Pot";
@@ -25,9 +26,9 @@ import { Welcome } from "./Welcome";
 import { FoodInfoPopover } from "./FoodInfoPopover";
 import { IdleWarning } from "./IdleWarning";
 import { Snackbar } from "./Snackbar";
+import { PresenterPanel } from "./PresenterPanel";
 import type { Alimento, Resultado } from "../lib/foods";
 
-const IDLE_TIMEOUT_MS = 3 * 60 * 1000;
 const IDLE_WARNING_MS = 10 * 1000;
 
 const ZONAS: Categoria[] = [
@@ -96,6 +97,16 @@ export default function Game() {
     actionLabel?: string;
     onAction?: () => void;
   } | null>(null);
+  const [presenterOpen, setPresenterOpen] = useState(false);
+  const [config, setConfig] = useState<AppConfig>(() => ({
+    idleTimeoutMs: 3 * 60 * 1000,
+    pularWelcome: false,
+  }));
+
+  // Carrega config persistida (só client-side)
+  useEffect(() => {
+    setConfig(lerConfig());
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -202,16 +213,49 @@ export default function Game() {
     resetar();
     setModoDescoberta(false);
     setDicasAtivas(false);
-    setIniciado(false);
+    // Se a apresentadora pediu pra pular Welcome, mantém no jogo
+    if (!config.pularWelcome) setIniciado(false);
     setAvisoIdle(false);
     setSnackbar(null);
   }
 
-  useIdleTimer(IDLE_TIMEOUT_MS, voltarAoInicio, iniciado, {
-    warningMs: IDLE_WARNING_MS,
-    onWarning: () => setAvisoIdle(true),
-    onActive: () => setAvisoIdle(false),
-  });
+  // Idle timer só ativa se houver timeout configurado e o jogo está iniciado
+  useIdleTimer(
+    config.idleTimeoutMs ?? 0,
+    voltarAoInicio,
+    iniciado && config.idleTimeoutMs !== null,
+    {
+      warningMs: IDLE_WARNING_MS,
+      onWarning: () => setAvisoIdle(true),
+      onActive: () => setAvisoIdle(false),
+    }
+  );
+
+  // Monta um prato perfeito automaticamente (1 de cada grupo + 1 fruta aleatória)
+  function demonstrarPratoExemplo() {
+    const apropriadosPorCat = new Map<Categoria, string[]>();
+    ALIMENTOS.forEach((a) => {
+      if (!a.apropriado || !a.categoria) return;
+      const arr = apropriadosPorCat.get(a.categoria) ?? [];
+      arr.push(a.id);
+      apropriadosPorCat.set(a.categoria, arr);
+    });
+    function pick(cat: Categoria): string {
+      const arr = apropriadosPorCat.get(cat) ?? [];
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    setPrato({
+      cereais: [pick("cereais")],
+      feijoes: [pick("feijoes")],
+      "carnes-ovos": [pick("carnes-ovos")],
+      "legumes-verduras": [pick("legumes-verduras")],
+      frutas: [pick("frutas")],
+    });
+    setDicasAtivas(true);
+  }
+
+  const abrirPresenter = () => setPresenterOpen(true);
+  const handleTripleTap = useTripleTap(abrirPresenter, 1500);
 
   function handleAlimentoClick(alimento: Alimento) {
     if (modoDescoberta) {
@@ -297,7 +341,11 @@ export default function Game() {
                 <span className="hidden sm:inline">Início</span>
               </button>
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 min-w-0">
-                <h1 className="text-base sm:text-2xl font-extrabold text-emerald-700 leading-none truncate">
+                <h1
+                  onClick={handleTripleTap}
+                  title="Toque 3 vezes para opções da apresentadora"
+                  className="text-base sm:text-2xl font-extrabold text-emerald-700 leading-none truncate cursor-pointer select-none"
+                >
                   Monte o Prato da Criança
                 </h1>
                 <p className="hidden sm:inline text-xs text-slate-600 truncate">
@@ -451,6 +499,15 @@ export default function Game() {
             actionLabel={snackbar.actionLabel}
             onAction={snackbar.onAction}
             onDismiss={() => setSnackbar(null)}
+          />
+        )}
+
+        {presenterOpen && (
+          <PresenterPanel
+            config={config}
+            onConfigChange={setConfig}
+            onDemonstrar={demonstrarPratoExemplo}
+            onClose={() => setPresenterOpen(false)}
           />
         )}
       </main>

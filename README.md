@@ -46,6 +46,7 @@ E exibe, para cada alimento escolhido, se é adequado para a idade ou o motivo d
 - 🏠 **Botão Início** sempre visível no header (limpa tudo e volta à Welcome)
 - ↩️ **Limpar com Desfazer** — clicar Limpar mostra um snackbar com opção "Desfazer" por 5s antes de perder o prato
 - 📊 **Stats diárias em localStorage** — registra `pratosPerfeitos` e `totalValidacoes`, reseta automaticamente ao virar o dia, mostradas na Welcome
+- 🎙️ **Painel da Apresentadora** — triplo toque no título abre painel oculto com: ajuste do tempo de inatividade (1/3/5/10 min ou desligado), opção de pular Welcome, reset do contador, e botão "Montar prato exemplo" (demonstração)
 
 ### Acessibilidade (WCAG 2.1 AA)
 - ⌨️ **Drag-and-drop por teclado** completo via `KeyboardSensor`

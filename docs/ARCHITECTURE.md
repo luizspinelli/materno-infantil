@@ -121,12 +121,17 @@ useIdleTimer (3 min com warning de 10s antes)
 | `IdleWarning` | Overlay com countdown |
 | `Snackbar` | Aviso transitório no canto inferior |
 | `ServiceWorkerRegister` | Registra `/sw.js` apenas em produção |
+| `PresenterPanel` | Painel oculto da apresentadora (acesso por triplo toque no título); ajusta idle timeout, pular Welcome, monta prato exemplo, reseta stats |
 
 ## Hooks customizados
 
 ### `useIdleTimer(timeoutMs, onIdle, enabled, options?)`
 
 Hook único que gerencia inatividade. Aceita opcionalmente `warningMs`, `onWarning`, `onActive` para emitir um aviso N ms antes do `onIdle` e notificar quando há atividade (pra fechar o aviso).
+
+### `useTripleTap(onTriple, windowMs?)`
+
+Retorna um handler `onClick` que dispara `onTriple` quando 3 cliques acontecem dentro de `windowMs` (padrão 1000 ms). Usado pra acessar o `PresenterPanel` sem expor controle na UI.
 
 ### `useFocusTrap({ enabled, onEscape })`
 

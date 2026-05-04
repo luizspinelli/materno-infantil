@@ -85,15 +85,27 @@ Para feira, basta rodar isso num laptop conectado à internet do estande, e abri
 
 ## Variáveis e configurações do app
 
-Não há `.env` necessário. As variáveis ajustáveis estão hardcoded (intencionalmente, pra não exigir build novo):
+Não há `.env` necessário.
+
+### Configurações ajustáveis pela apresentadora (em runtime)
+
+Acessíveis pelo **Painel da Apresentadora**: triplo toque no título "Monte o Prato da Criança" no header. Persiste em `localStorage`.
+
+| Configuração | Padrão | Opções |
+|---|---|---|
+| Tempo de inatividade | 3 min | 1 min · 3 min · 5 min · 10 min · Desligado |
+| Pular tela de boas-vindas | Desligado | Liga/desliga (no auto-reset, vai direto pro jogo) |
+| Resetar contador de stats | — | Botão (com confirmação) |
+| Demonstrar prato perfeito | — | Monta automático um prato exemplo |
+
+### Configurações fixas no código
 
 | Variável | Onde | Padrão | Quando alterar |
 |---|---|---|---|
-| `IDLE_TIMEOUT_MS` | `Game.tsx` | 3 min | Se a feira tem fluxo lento e visitantes pensam mais |
 | `IDLE_WARNING_MS` | `Game.tsx` | 10s | Mais tempo se a maioria for idoso |
 | Cores das categorias | `foods.ts` | — | Branding diferente |
 
-Se precisar mudar, edite, dê commit, build, deploy.
+Se precisar mudar uma das fixas, edite, dê commit, build, deploy.
 
 ## Performance esperada
 
