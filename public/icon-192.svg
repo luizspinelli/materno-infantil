@@ -1,8 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-  <rect width="192" height="192" fill="#15803d"/>
-  <circle cx="96" cy="96" r="68" fill="#fef9f3" stroke="#e7d5b8" stroke-width="3"/>
-  <circle cx="96" cy="96" r="60" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-  <line x1="36" y1="96" x2="156" y2="96" stroke="#cbd5e1" stroke-width="3"/>
-  <line x1="96" y1="36" x2="96" y2="156" stroke="#cbd5e1" stroke-width="3"/>
-  <text x="96" y="180" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#ffffff">PRATO</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="192" height="192">
+  <!-- Fundo arredondado verde nutrição -->
+  <rect width="512" height="512" rx="96" fill="#15803d"/>
+
+  <!-- Sombra do prato -->
+  <ellipse cx="256" cy="280" rx="200" ry="195" fill="#000" opacity="0.18"/>
+
+  <!-- Aba do prato (bordas) -->
+  <circle cx="256" cy="256" r="200" fill="#fef9f3" stroke="#e7d5b8" stroke-width="4"/>
+  <circle cx="256" cy="256" r="188" fill="#ffffff" stroke="#e7d5b8" stroke-width="2"/>
+
+  <!-- 4 cavidades coloridas representando os grupos alimentares -->
+  <!-- Top-left: Cereais (âmbar) -->
+  <path d="M 256 256 L 256 78 A 178 178 0 0 0 78 256 Z"
+        fill="#fde68a" stroke="#b45309" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Top-right: Feijões (marrom) -->
+  <path d="M 256 256 L 434 256 A 178 178 0 0 0 256 78 Z"
+        fill="#d6b89a" stroke="#92400e" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Bottom-left: Legumes (verde) -->
+  <path d="M 256 256 L 78 256 A 178 178 0 0 0 256 434 Z"
+        fill="#bbf7d0" stroke="#15803d" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Bottom-right: Carnes (vermelho) -->
+  <path d="M 256 256 L 256 434 A 178 178 0 0 0 434 256 Z"
+        fill="#fecaca" stroke="#b91c1c" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Pequenos símbolos representativos em cada quadrante -->
+  <!-- Cereais: grãos brancos -->
+  <ellipse cx="155" cy="170" rx="10" ry="5" fill="#fff" stroke="#b45309" stroke-width="1.5" transform="rotate(-25 155 170)"/>
+  <ellipse cx="180" cy="195" rx="10" ry="5" fill="#fff" stroke="#b45309" stroke-width="1.5" transform="rotate(20 180 195)"/>
+  <ellipse cx="200" cy="160" rx="10" ry="5" fill="#fff" stroke="#b45309" stroke-width="1.5" transform="rotate(-10 200 160)"/>
+
+  <!-- Feijões: pontos marrons escuros -->
+  <ellipse cx="320" cy="170" rx="14" ry="9" fill="#7c2d12" stroke="#3f1f0f" stroke-width="1.5" transform="rotate(20 320 170)"/>
+  <ellipse cx="355" cy="195" rx="14" ry="9" fill="#7c2d12" stroke="#3f1f0f" stroke-width="1.5" transform="rotate(-15 355 195)"/>
+  <ellipse cx="380" cy="160" rx="14" ry="9" fill="#7c2d12" stroke="#3f1f0f" stroke-width="1.5" transform="rotate(35 380 160)"/>
+
+  <!-- Legumes: brócolis verde escuro -->
+  <circle cx="155" cy="335" r="14" fill="#15803d"/>
+  <circle cx="175" cy="320" r="13" fill="#166534"/>
+  <circle cx="195" cy="335" r="14" fill="#15803d"/>
+  <circle cx="170" cy="350" r="12" fill="#166534"/>
+
+  <!-- Carnes: estilo "pedaço de carne" -->
+  <ellipse cx="350" cy="335" rx="40" ry="22" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <path d="M 320 330 Q 350 320 380 330" stroke="#7f1d1d" stroke-width="2" fill="none"/>
+  <ellipse cx="332" cy="328" rx="6" ry="4" fill="#fecaca" opacity="0.6"/>
+
+  <!-- Brilho/destaque -->
+  <ellipse cx="170" cy="130" rx="42" ry="16" fill="#ffffff" opacity="0.5"/>
 </svg>

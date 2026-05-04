@@ -1,16 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { lerStats, type Stats } from "../lib/stats";
+
 type Props = {
   onStart: () => void;
 };
 
 export function Welcome({ onStart }: Props) {
+  const [stats, setStats] = useState<Stats | null>(null);
+
+  useEffect(() => {
+    setStats(lerStats());
+  }, []);
+
   return (
-    <div className="h-screen w-screen overflow-hidden bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 flex items-center justify-center p-6">
-      <div className="max-w-3xl w-full bg-white rounded-3xl shadow-xl p-8 sm:p-10 flex flex-col items-center text-center gap-5">
+    <div className="min-h-screen w-screen overflow-hidden bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="max-w-3xl w-full bg-white rounded-3xl shadow-xl p-6 sm:p-10 flex flex-col items-center text-center gap-5">
         <div className="text-5xl sm:text-6xl">🍽️</div>
         <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-emerald-700 leading-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-emerald-700 leading-tight">
             Monte o Prato da Criança
           </h1>
           <p className="mt-2 text-sm sm:text-base text-slate-600">
@@ -34,6 +43,20 @@ export function Welcome({ onStart }: Props) {
         >
           Começar
         </button>
+
+        {stats && stats.totalValidacoes > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 border-t border-slate-200 pt-4 w-full">
+            <span>
+              <strong className="text-emerald-700 text-sm">{stats.pratosPerfeitos}</strong>{" "}
+              prato(s) perfeito(s) hoje
+            </span>
+            <span>·</span>
+            <span>
+              <strong className="text-slate-700 text-sm">{stats.totalValidacoes}</strong>{" "}
+              validação(ões) no total
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
