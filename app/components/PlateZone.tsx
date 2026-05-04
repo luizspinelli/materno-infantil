@@ -1,6 +1,7 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
+import { useEffect, useRef, useState } from "react";
 import type { Alimento, Categoria } from "../lib/foods";
 import { CATEGORIAS } from "../lib/foods";
 import { DraggableFood } from "./DraggableFood";
@@ -29,24 +30,48 @@ export function PlateZone({ zona, alimentos, onAlimentoClick }: Props) {
   const hint = HINTS[zona];
   const vazia = alimentos.length === 0;
 
+  // Anima a zona quando recebe um novo alimento
+  const [acabouDeReceber, setAcabouDeReceber] = useState(false);
+  const previousCount = useRef(alimentos.length);
+
+  useEffect(() => {
+    if (alimentos.length > previousCount.current) {
+      setAcabouDeReceber(true);
+      const id = setTimeout(() => setAcabouDeReceber(false), 450);
+      return () => clearTimeout(id);
+    }
+    previousCount.current = alimentos.length;
+  }, [alimentos.length]);
+
   return (
     <div
       ref={setNodeRef}
-      className="flex h-full w-full flex-wrap items-center justify-center content-center gap-1 p-2 transition-colors rounded-2xl overflow-hidden"
+      role="region"
+      aria-label={`Zona ${meta.titulo}${vazia ? " (vazia)" : ""}`}
+      className="flex h-full w-full flex-wrap items-center justify-center content-center gap-1 p-2 transition-all rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: isOver ? `${meta.cor}26` : vazia ? `${meta.cor}10` : "transparent",
+        backgroundColor: isOver ? `${meta.cor}33` : vazia ? `${meta.cor}14` : "transparent",
         outline: isOver ? `2px dashed ${meta.cor}` : "none",
         outlineOffset: "-4px",
+        animation: acabouDeReceber ? `dropPulse 450ms ease-out` : undefined,
+        boxShadow: acabouDeReceber ? `0 0 0 4px ${meta.cor}55` : undefined,
       }}
     >
+      <style jsx>{`
+        @keyframes dropPulse {
+          0% { transform: scale(1); }
+          40% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
       {vazia ? (
         <div
           className="flex flex-col items-center justify-center gap-0.5 select-none pointer-events-none"
-          style={{ color: meta.cor, opacity: 0.45 }}
+          style={{ color: meta.cor, opacity: 0.6 }}
           aria-hidden
         >
           <span className="text-3xl sm:text-4xl leading-none">{hint.emoji}</span>
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wide">
+          <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
             {hint.label}
           </span>
         </div>

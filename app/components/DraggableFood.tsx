@@ -30,9 +30,6 @@ export function DraggableFood({
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.4 : 1,
     cursor: onClick ? "pointer" : isDragging ? "grabbing" : "grab",
-    // manipulation deixa o navegador tratar gestos comuns (scroll, tap),
-    // só interceptando double-tap-zoom. O TouchSensor com delay e
-    // tolerance decide se o gesto vira drag ou scroll.
     touchAction: "manipulation",
   };
 
@@ -41,7 +38,8 @@ export function DraggableFood({
       <button
         type="button"
         onClick={() => onClick(alimento)}
-        className="flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-emerald-300 transition-all border border-slate-200 cursor-pointer"
+        aria-label={`Ver detalhes de ${alimento.nome}`}
+        className="flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all border border-slate-200 cursor-pointer"
         title={`Tocar para detalhes de ${alimento.nome}`}
       >
         <FoodIcon alimento={alimento} size={size} />
@@ -60,9 +58,17 @@ export function DraggableFood({
       style={style}
       {...listeners}
       {...attributes}
-      className="flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md transition-shadow border border-slate-200"
-      title={alimento.nome}
+      className="relative flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow border border-slate-200 group"
+      title={`Arraste ${alimento.nome} para o prato`}
+      aria-label={`${alimento.nome}. Arraste para uma zona do prato.`}
     >
+      {/* Drag handle visual no canto */}
+      <span
+        aria-hidden
+        className="absolute top-1 right-1 text-slate-300 group-hover:text-slate-400 text-[10px] leading-none pointer-events-none"
+      >
+        ⋮⋮
+      </span>
       <FoodIcon alimento={alimento} size={size} />
       {showName && (
         <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">

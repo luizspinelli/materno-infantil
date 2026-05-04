@@ -15,7 +15,7 @@ export function Welcome({ onStart }: Props) {
   }, []);
 
   return (
-    <div className="min-h-screen w-screen overflow-hidden bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen w-screen overflow-hidden bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div className="max-w-3xl w-full bg-white rounded-3xl shadow-xl p-6 sm:p-10 flex flex-col items-center text-center gap-5">
         <div className="text-5xl sm:text-6xl">🍽️</div>
         <div>

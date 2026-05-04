@@ -6,6 +6,7 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
+  KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -82,7 +83,9 @@ export default function Game() {
     // Long-press de 300ms pra iniciar drag em touch. Se o usuário mover
     // mais de 15px durante esse delay, o gesto é cancelado e o navegador
     // assume scroll/tap normal.
-    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 15 } })
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 15 } }),
+    // Keyboard: Tab pra focar, Espaço/Enter pra pegar/soltar, setas pra navegar entre zonas
+    useSensor(KeyboardSensor)
   );
 
   const idsNoPrato = useMemo(
@@ -208,7 +211,7 @@ export default function Game() {
       <main
         className={
           // Em portrait mobile: deixa o body rolar. Em landscape (qualquer device) e em md+: tela cheia sem scroll do body.
-          "min-h-screen w-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 " +
+          "min-h-screen w-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 animate-fade-in " +
           "landscape:h-screen landscape:overflow-hidden md:h-screen md:overflow-hidden"
         }
       >
@@ -233,16 +236,38 @@ export default function Game() {
                 </p>
               </div>
             </div>
-            <label className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-600 cursor-pointer select-none shrink-0">
-              <input
-                type="checkbox"
-                checked={modoDescoberta}
-                onChange={(e) => setModoDescoberta(e.target.checked)}
-                className="w-4 h-4 accent-emerald-600"
-              />
+            <button
+              type="button"
+              role="switch"
+              aria-checked={modoDescoberta}
+              onClick={() => setModoDescoberta((v) => !v)}
+              className={
+                "flex items-center gap-2 text-[11px] sm:text-xs select-none shrink-0 " +
+                "rounded-full border px-3 py-1.5 transition-colors min-h-[36px] " +
+                "focus:outline-none focus:ring-2 focus:ring-emerald-500 " +
+                (modoDescoberta
+                  ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700"
+                  : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50")
+              }
+              title="Quando ativo, tocar em um alimento abre detalhes em vez de iniciar drag"
+            >
+              <span
+                aria-hidden
+                className={
+                  "inline-block w-7 h-4 rounded-full relative transition-colors " +
+                  (modoDescoberta ? "bg-emerald-200" : "bg-slate-300")
+                }
+              >
+                <span
+                  className={
+                    "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all " +
+                    (modoDescoberta ? "left-3.5" : "left-0.5")
+                  }
+                />
+              </span>
               Modo descoberta
-              <span className="hidden md:inline text-slate-400">(toque para ler)</span>
-            </label>
+              <span className="hidden md:inline opacity-70">(tocar para ler)</span>
+            </button>
           </header>
 
           {/* Container principal — vertical em portrait, lado a lado em landscape */}
@@ -300,7 +325,10 @@ export default function Game() {
                   </button>
                   <button
                     onClick={validar}
-                    className="rounded-lg bg-emerald-600 px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow hover:bg-emerald-700"
+                    disabled={totalNoPrato === 0}
+                    aria-disabled={totalNoPrato === 0}
+                    title={totalNoPrato === 0 ? "Adicione alimentos ao prato primeiro" : "Validar o prato montado"}
+                    className="rounded-lg bg-emerald-600 px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     Validar prato
                   </button>
@@ -328,11 +356,19 @@ export default function Game() {
 
         <DragOverlay dropAnimation={null}>
           {alimentoAtivo ? (
-            <div className="rounded-xl bg-white p-2 shadow-xl border border-slate-300">
+            <div
+              className="rounded-xl bg-white p-2 shadow-2xl border border-slate-300"
+              style={{ transform: "rotate(3deg) scale(1.05)" }}
+            >
               <FoodIcon alimento={alimentoAtivo} size={72} />
             </div>
           ) : null}
         </DragOverlay>
+
+        {/* Region pra leitor de tela anunciar drag/drop */}
+        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+          {alimentoAtivo ? `Arrastando ${alimentoAtivo.nome}` : ""}
+        </div>
 
         {resultado && (
           <ValidationPanel

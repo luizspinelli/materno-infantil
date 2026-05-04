@@ -25,19 +25,26 @@ export function Pool({ alimentos, onAlimentoClick }: Props) {
         Alimentos disponíveis
         <span className="ml-2 text-xs font-normal text-slate-500">({alimentos.length})</span>
       </h2>
-      <div
-        className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-3 overflow-y-auto pr-1 flex-1 min-h-0 content-start overscroll-contain"
-        style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
-      >
-        {alimentos.map((a) => (
-          <DraggableFood
-            key={a.id}
-            alimento={a}
-            origem="pool"
-            size={64}
-            onClick={onAlimentoClick}
-          />
-        ))}
+      <div className="relative flex-1 min-h-0">
+        <div
+          className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-3 overflow-y-auto pr-1 h-full content-start overscroll-contain"
+          style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+        >
+          {alimentos.map((a) => (
+            <DraggableFood
+              key={a.id}
+              alimento={a}
+              origem="pool"
+              size={64}
+              onClick={onAlimentoClick}
+            />
+          ))}
+        </div>
+        {/* Gradient sutil indicando que tem mais conteúdo abaixo */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-white/90 to-transparent rounded-b-2xl"
+        />
       </div>
     </div>
   );

@@ -30,8 +30,8 @@ export function ValidationPanel({ resultado, onClose, onTentarNovamente }: Props
       >
         <button
           onClick={onClose}
-          aria-label="Fechar"
-          className="absolute top-2 right-2 rounded-full px-3 py-1 text-base text-slate-500 hover:bg-slate-100 z-10"
+          aria-label="Fechar resultado"
+          className="absolute top-2 right-2 w-11 h-11 rounded-full text-base text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 z-10 flex items-center justify-center"
         >
           ✕
         </button>
