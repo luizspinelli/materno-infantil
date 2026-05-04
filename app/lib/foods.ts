@@ -72,7 +72,7 @@ export const ALIMENTOS: Alimento[] = [
   { id: "grao-de-bico", nome: "Grão-de-bico amassado", img: openmoji("1FAD8"), categoria: "feijoes", apropriado: true },
   { id: "feijao-preto", nome: "Feijão preto", img: openmoji("1FAD8"), categoria: "feijoes", apropriado: true },
   { id: "feijao-branco", nome: "Feijão branco", img: openmoji("1FAD8"), categoria: "feijoes", apropriado: true },
-  { id: "ervilha", nome: "Ervilha", img: openmoji("1FADD"), categoria: "feijoes", apropriado: true },
+  { id: "ervilha", nome: "Ervilha", img: openmoji("1FAD8"), categoria: "feijoes", apropriado: true },
 
   // ===== CARNES E OVOS =====
   { id: "frango", nome: "Frango desfiado", img: openmoji("1F357"), categoria: "carnes-ovos", apropriado: true },
@@ -99,7 +99,7 @@ export const ALIMENTOS: Alimento[] = [
   { id: "abobora", nome: "Abóbora amassada", img: openmoji("1F383"), categoria: "legumes-verduras", apropriado: true },
   { id: "chuchu", nome: "Chuchu cozido", img: openmoji("1F952"), categoria: "legumes-verduras", apropriado: true },
   { id: "abobrinha", nome: "Abobrinha cozida", img: openmoji("1F952"), categoria: "legumes-verduras", apropriado: true },
-  { id: "beterraba", nome: "Beterraba", img: openmoji("1FADC"), categoria: "legumes-verduras", apropriado: true },
+  { id: "beterraba", nome: "Beterraba", img: openmoji("1F345"), categoria: "legumes-verduras", apropriado: true },
   { id: "couve-flor", nome: "Couve-flor", img: openmoji("1F966"), categoria: "legumes-verduras", apropriado: true },
   { id: "espinafre", nome: "Espinafre cozido", img: openmoji("1F96C"), categoria: "legumes-verduras", apropriado: true },
 
