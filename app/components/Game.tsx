@@ -22,9 +22,11 @@ import { FoodIcon } from "./FoodIcon";
 import { ValidationPanel } from "./ValidationPanel";
 import { Welcome } from "./Welcome";
 import { FoodInfoPopover } from "./FoodInfoPopover";
+import { IdleWarning } from "./IdleWarning";
 import type { Alimento, Resultado } from "../lib/foods";
 
 const IDLE_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutos sem interação → volta à tela inicial
+const IDLE_WARNING_MS = 10 * 1000; // últimos 10s mostram aviso com countdown
 
 const ZONAS: Categoria[] = [
   "cereais",
@@ -73,6 +75,7 @@ export default function Game() {
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [modoDescoberta, setModoDescoberta] = useState(false);
   const [alimentoInspecao, setAlimentoInspecao] = useState<Alimento | null>(null);
+  const [avisoIdle, setAvisoIdle] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -166,11 +169,16 @@ export default function Game() {
     resetar();
     setModoDescoberta(false);
     setIniciado(false);
+    setAvisoIdle(false);
   }
 
-  // Volta à tela inicial após inatividade (cobre o cenário de feira:
-  // visitante sai sem clicar em nada e o próximo encontra estado limpo)
-  useIdleTimer(IDLE_TIMEOUT_MS, voltarAoInicio, iniciado);
+  // Volta à tela inicial após inatividade. 10s antes do reset mostra
+  // um aviso com countdown que pode ser cancelado tocando "Continuar".
+  useIdleTimer(IDLE_TIMEOUT_MS, voltarAoInicio, iniciado, {
+    warningMs: IDLE_WARNING_MS,
+    onWarning: () => setAvisoIdle(true),
+    onActive: () => setAvisoIdle(false),
+  });
 
   function handleAlimentoClick(alimento: Alimento) {
     if (modoDescoberta) {
@@ -338,6 +346,13 @@ export default function Game() {
           <FoodInfoPopover
             alimento={alimentoInspecao}
             onClose={() => setAlimentoInspecao(null)}
+          />
+        )}
+
+        {avisoIdle && (
+          <IdleWarning
+            totalSeconds={Math.round(IDLE_WARNING_MS / 1000)}
+            onContinue={() => setAvisoIdle(false)}
           />
         )}
       </main>
