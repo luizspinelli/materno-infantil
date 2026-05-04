@@ -10,6 +10,7 @@ type Props = {
   zona: Categoria;
   alimentos: Alimento[];
   onAlimentoClick?: (alimento: Alimento) => void;
+  mostrarDica?: boolean;
 };
 
 const HINTS: Record<Categoria, { emoji: string; label: string }> = {
@@ -20,7 +21,7 @@ const HINTS: Record<Categoria, { emoji: string; label: string }> = {
   frutas: { emoji: "🍎", label: "Fruta" },
 };
 
-export function PlateZone({ zona, alimentos, onAlimentoClick }: Props) {
+export function PlateZone({ zona, alimentos, onAlimentoClick, mostrarDica = false }: Props) {
   const { setNodeRef, isOver } = useDroppable({
     id: `zona:${zona}`,
     data: { zona },
@@ -50,7 +51,11 @@ export function PlateZone({ zona, alimentos, onAlimentoClick }: Props) {
       aria-label={`Zona ${meta.titulo}${vazia ? " (vazia)" : ""}`}
       className="flex h-full w-full flex-wrap items-center justify-center content-center gap-1 p-2 transition-all rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: isOver ? `${meta.cor}33` : vazia ? `${meta.cor}14` : "transparent",
+        backgroundColor: isOver
+          ? `${meta.cor}33`
+          : vazia && mostrarDica
+            ? `${meta.cor}14`
+            : "transparent",
         outline: isOver ? `2px dashed ${meta.cor}` : "none",
         outlineOffset: "-4px",
         animation: acabouDeReceber ? `dropPulse 450ms ease-out` : undefined,
@@ -64,29 +69,29 @@ export function PlateZone({ zona, alimentos, onAlimentoClick }: Props) {
           100% { transform: scale(1); }
         }
       `}</style>
-      {vazia ? (
-        <div
-          className="flex flex-col items-center justify-center gap-0.5 select-none pointer-events-none"
-          style={{ color: meta.cor, opacity: 0.6 }}
-          aria-hidden
-        >
-          <span className="text-3xl sm:text-4xl leading-none">{hint.emoji}</span>
-          <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
-            {hint.label}
-          </span>
-        </div>
-      ) : (
-        alimentos.map((a) => (
-          <DraggableFood
-            key={a.id}
-            alimento={a}
-            origem="prato"
-            size={56}
-            showName={false}
-            onClick={onAlimentoClick}
-          />
-        ))
-      )}
+      {vazia
+        ? mostrarDica && (
+            <div
+              className="flex flex-col items-center justify-center gap-0.5 select-none pointer-events-none"
+              style={{ color: meta.cor, opacity: 0.6 }}
+              aria-hidden
+            >
+              <span className="text-3xl sm:text-4xl leading-none">{hint.emoji}</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
+                {hint.label}
+              </span>
+            </div>
+          )
+        : alimentos.map((a) => (
+            <DraggableFood
+              key={a.id}
+              alimento={a}
+              origem="prato"
+              size={56}
+              showName={false}
+              onClick={onAlimentoClick}
+            />
+          ))}
     </div>
   );
 }

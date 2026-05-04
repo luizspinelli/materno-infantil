@@ -9,9 +9,10 @@ type Props = {
     "cereais" | "feijoes" | "carnes-ovos" | "legumes-verduras"
   >;
   onAlimentoClick?: (alimento: Alimento) => void;
+  mostrarDicas?: boolean;
 };
 
-export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
+export function Plate({ alimentosPorZona, onAlimentoClick, mostrarDicas = false }: Props) {
   return (
     <div className="relative h-full w-full" style={{ aspectRatio: "1 / 1" }}>
       <svg
@@ -65,6 +66,7 @@ export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
             zona="cereais"
             alimentos={alimentosPorZona.cereais}
             onAlimentoClick={onAlimentoClick}
+            mostrarDica={mostrarDicas}
           />
         </div>
         <div className="absolute right-[8%] top-[8%] h-[42%] w-[42%]">
@@ -72,6 +74,7 @@ export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
             zona="feijoes"
             alimentos={alimentosPorZona.feijoes}
             onAlimentoClick={onAlimentoClick}
+            mostrarDica={mostrarDicas}
           />
         </div>
         <div className="absolute left-[8%] bottom-[8%] h-[42%] w-[42%]">
@@ -79,6 +82,7 @@ export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
             zona="legumes-verduras"
             alimentos={alimentosPorZona["legumes-verduras"]}
             onAlimentoClick={onAlimentoClick}
+            mostrarDica={mostrarDicas}
           />
         </div>
         <div className="absolute right-[8%] bottom-[8%] h-[42%] w-[42%]">
@@ -86,6 +90,7 @@ export function Plate({ alimentosPorZona, onAlimentoClick }: Props) {
             zona="carnes-ovos"
             alimentos={alimentosPorZona["carnes-ovos"]}
             onAlimentoClick={onAlimentoClick}
+            mostrarDica={mostrarDicas}
           />
         </div>
       </div>

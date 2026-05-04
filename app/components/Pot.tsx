@@ -6,9 +6,10 @@ import { PlateZone } from "./PlateZone";
 type Props = {
   alimentos: Alimento[];
   onAlimentoClick?: (alimento: Alimento) => void;
+  mostrarDica?: boolean;
 };
 
-export function Pot({ alimentos, onAlimentoClick }: Props) {
+export function Pot({ alimentos, onAlimentoClick, mostrarDica = false }: Props) {
   return (
     <div className="relative h-full w-full" style={{ aspectRatio: "1 / 1" }}>
       <svg
@@ -37,7 +38,12 @@ export function Pot({ alimentos, onAlimentoClick }: Props) {
       </svg>
 
       <div className="absolute inset-[8%]">
-        <PlateZone zona="frutas" alimentos={alimentos} onAlimentoClick={onAlimentoClick} />
+        <PlateZone
+          zona="frutas"
+          alimentos={alimentos}
+          onAlimentoClick={onAlimentoClick}
+          mostrarDica={mostrarDica}
+        />
       </div>
     </div>
   );

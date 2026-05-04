@@ -75,6 +75,7 @@ export default function Game() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [modoDescoberta, setModoDescoberta] = useState(false);
+  const [dicasAtivas, setDicasAtivas] = useState(false);
   const [alimentoInspecao, setAlimentoInspecao] = useState<Alimento | null>(null);
   const [avisoIdle, setAvisoIdle] = useState(false);
 
@@ -171,6 +172,7 @@ export default function Game() {
   function voltarAoInicio() {
     resetar();
     setModoDescoberta(false);
+    setDicasAtivas(false);
     setIniciado(false);
     setAvisoIdle(false);
   }
@@ -236,38 +238,20 @@ export default function Game() {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={modoDescoberta}
-              onClick={() => setModoDescoberta((v) => !v)}
-              className={
-                "flex items-center gap-2 text-[11px] sm:text-xs select-none shrink-0 " +
-                "rounded-full border px-3 py-1.5 transition-colors min-h-[36px] " +
-                "focus:outline-none focus:ring-2 focus:ring-emerald-500 " +
-                (modoDescoberta
-                  ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700"
-                  : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50")
-              }
-              title="Quando ativo, tocar em um alimento abre detalhes em vez de iniciar drag"
-            >
-              <span
-                aria-hidden
-                className={
-                  "inline-block w-7 h-4 rounded-full relative transition-colors " +
-                  (modoDescoberta ? "bg-emerald-200" : "bg-slate-300")
-                }
-              >
-                <span
-                  className={
-                    "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all " +
-                    (modoDescoberta ? "left-3.5" : "left-0.5")
-                  }
-                />
-              </span>
-              Modo descoberta
-              <span className="hidden md:inline opacity-70">(tocar para ler)</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <ToggleSwitch
+                label="Dicas"
+                description="Mostra ícones nas zonas vazias do prato"
+                checked={dicasAtivas}
+                onChange={setDicasAtivas}
+              />
+              <ToggleSwitch
+                label="Modo descoberta"
+                description="Tocar em um alimento abre detalhes em vez de arrastar"
+                checked={modoDescoberta}
+                onChange={setModoDescoberta}
+              />
+            </div>
           </header>
 
           {/* Container principal — vertical em portrait, lado a lado em landscape */}
@@ -296,6 +280,7 @@ export default function Game() {
                   <Plate
                     alimentosPorZona={alimentosPorZona}
                     onAlimentoClick={modoDescoberta ? handleAlimentoClick : undefined}
+                    mostrarDicas={dicasAtivas}
                   />
                 </div>
                 <div
@@ -308,6 +293,7 @@ export default function Game() {
                   <Pot
                     alimentos={alimentosPorZona.frutas}
                     onAlimentoClick={modoDescoberta ? handleAlimentoClick : undefined}
+                    mostrarDica={dicasAtivas}
                   />
                 </div>
               </div>
@@ -393,5 +379,51 @@ export default function Game() {
         )}
       </main>
     </DndContext>
+  );
+}
+
+function ToggleSwitch({
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      title={description}
+      className={
+        "flex items-center gap-2 text-[11px] sm:text-xs select-none shrink-0 " +
+        "rounded-full border px-3 py-1.5 transition-colors min-h-[36px] " +
+        "focus:outline-none focus:ring-2 focus:ring-emerald-500 " +
+        (checked
+          ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700"
+          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50")
+      }
+    >
+      <span
+        aria-hidden
+        className={
+          "inline-block w-7 h-4 rounded-full relative transition-colors " +
+          (checked ? "bg-emerald-200" : "bg-slate-300")
+        }
+      >
+        <span
+          className={
+            "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all " +
+            (checked ? "left-3.5" : "left-0.5")
+          }
+        />
+      </span>
+      {label}
+    </button>
   );
 }
