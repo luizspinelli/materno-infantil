@@ -30,14 +30,34 @@ E exibe, para cada alimento escolhido, se é adequado para a idade ou o motivo d
 
 ## Recursos
 
-- 🎯 **Drag and drop** com `@dnd-kit` (mouse + touch, com long-press de 300ms para diferenciar de scroll)
-- 🎉 **Confete animado** quando a validação retorna prato perfeito
-- 🔍 **Modo descoberta** — toggle no header que troca o drag por _tap to read_: tocar em qualquer alimento abre um popover com nome, grupo e motivo (ideal para apresentadora explicar item por item)
-- 🏷️ **Hints visuais** — cada zona vazia mostra um emoji + label da categoria com a cor correspondente
-- 🔄 **Auto-reset por inatividade** — após 3 minutos sem interação, mostra um aviso de 10s ("Voltando à tela inicial em Xs · Continuar jogando") e volta para a Welcome (próximo visitante encontra estado limpo)
-- 🏠 **Botão Início** sempre visível no header
+### Jogo e validação
+- 🎯 **Drag and drop** com `@dnd-kit` — mouse, touch (long-press 300ms para diferenciar de scroll) e teclado (Tab + Espaço/Enter + setas)
+- 📊 **Indicador de progresso** "X/4" com bolinhas coloridas das categorias no header, atualizando em tempo real
+- 🎉 **Confete animado** + vibração tátil (60ms) quando a validação retorna prato perfeito
+- 📳 **Haptic feedback** (20ms) ao soltar um alimento numa zona em dispositivos compatíveis
+
+### Onboarding e exploração
+- 👋 **Tutorial sutil**: o primeiro card do pool pulsa em verde até o primeiro drag/scroll/clique
+- 🔍 **Modo descoberta** — toggle que troca o drag por _tap to read_: tocar em um alimento abre um popover com nome, grupo e motivo (ideal para a apresentadora explicar item por item)
+- 🏷️ **Dicas opcionais** — toggle que mostra emoji + label + cor pastel em cada zona vazia, identificando os grupos
+
+### Operação na feira
+- 🔄 **Auto-reset por inatividade** — após 3 minutos sem interação, aviso de 10s ("Voltando à tela inicial em Xs · Continuar jogando"); qualquer toque cancela
+- 🏠 **Botão Início** sempre visível no header (limpa tudo e volta à Welcome)
+- ↩️ **Limpar com Desfazer** — clicar Limpar mostra um snackbar com opção "Desfazer" por 5s antes de perder o prato
 - 📊 **Stats diárias em localStorage** — registra `pratosPerfeitos` e `totalValidacoes`, reseta automaticamente ao virar o dia, mostradas na Welcome
-- 📱 **Responsivo** — adapta layout entre portrait/landscape em qualquer dispositivo
+
+### Acessibilidade (WCAG 2.1 AA)
+- ⌨️ **Drag-and-drop por teclado** completo via `KeyboardSensor`
+- 🔗 **Skip-link** "Pular para o prato" visível ao foco
+- 🪟 **Modais com focus trap**, `Esc` para fechar e restauração de foco no fechamento
+- 📢 **Anúncios para leitor de tela** durante drag (`aria-live`)
+- 🎚️ **Toggles com `role="switch"`** e `aria-checked`
+- 🎯 **Touch targets ≥ 44px** e focus rings em todos elementos interativos
+- 🌗 **Respeita `prefers-reduced-motion`** desligando animações
+
+### Plataforma
+- 📱 **Responsivo** — adapta layout entre portrait/landscape em qualquer dispositivo (celular, tablet, desktop)
 - 📲 **PWA instalável** — manifest + service worker com cache do app shell e dos ícones OpenMoji para funcionar offline
 - 🧪 **Testes unitários** com Vitest cobrindo a lógica de validação e o dataset
 
@@ -84,23 +104,26 @@ Abra no navegador, vá em DevTools → Application → Service Workers (deve est
 ```
 app/
 ├── components/
-│   ├── Game.tsx                 # Componente raiz (DnD context, estado, idle timer)
+│   ├── Game.tsx                 # Componente raiz (DnD, estado, idle, ToggleSwitch, ProgressoGrupos)
 │   ├── Welcome.tsx              # Tela inicial com instruções e contador de stats
 │   ├── Plate.tsx                # Prato circular com 4 quadrantes
 │   ├── Pot.tsx                  # Pratinho lateral (frutas)
-│   ├── PlateZone.tsx            # Zona droppable (com hint visual quando vazia)
-│   ├── Pool.tsx                 # Lista de alimentos disponíveis com scroll
-│   ├── DraggableFood.tsx        # Card de alimento (arrastável ou clicável)
+│   ├── PlateZone.tsx            # Zona droppable (animação de drop + hint opcional)
+│   ├── Pool.tsx                 # Lista de alimentos com scroll, gradient e tutorial
+│   ├── DraggableFood.tsx        # Card de alimento (drag handle + pulse de tutorial)
 │   ├── FoodIcon.tsx             # Renderiza img/svg/emoji do alimento
-│   ├── ValidationPanel.tsx      # Modal de resultado da validação (responsivo)
-│   ├── FoodInfoPopover.tsx      # Popover do modo descoberta
-│   ├── IdleWarning.tsx          # Overlay com countdown antes do auto-reset
+│   ├── ValidationPanel.tsx      # Modal de resultado (responsivo, focus trap)
+│   ├── FoodInfoPopover.tsx      # Popover do modo descoberta (focus trap)
+│   ├── IdleWarning.tsx          # Overlay de countdown antes do auto-reset (focus trap)
+│   ├── Snackbar.tsx             # Aviso transitório com ação opcional (Desfazer)
 │   └── ServiceWorkerRegister.tsx # Registra o SW em produção
 ├── lib/
 │   ├── foods.ts                 # Dataset de alimentos + validarPrato
 │   ├── foods.test.ts            # 13 testes unitários
 │   ├── stats.ts                 # Contador diário em localStorage
-│   └── useIdleTimer.ts          # Hook de inatividade (com warning opcional)
+│   ├── useIdleTimer.ts          # Hook de inatividade (com warning opcional)
+│   └── useFocusTrap.ts          # Hook que aprisiona Tab dentro do modal + Esc
+├── globals.css                  # Tailwind import + keyframes (fade-in, tutorial-pulse)
 ├── layout.tsx                   # Metadata, manifest, registro do SW
 └── page.tsx                     # Importa Game dinamicamente (ssr: false)
 
@@ -137,8 +160,12 @@ Para alimentos sem equivalente direto no OpenMoji, o `FoodIcon` aceita `emoji: "
 - **Tela cheia**: clique no botão de fullscreen do navegador (F11 / ícone de expandir) para esconder a barra de endereço
 - **Layout ideal**: tablet em paisagem
 - **Auto-reset**: 3 minutos sem interação → aviso de 10s → volta à Welcome
-- **Modo descoberta** ajuda a apresentadora a explicar alimentos individuais sem precisar montar o prato
+- **Botão Início**: limpa tudo e volta à Welcome a qualquer momento
+- **Limpar com Desfazer**: clique acidental em Limpar pode ser revertido pelos 5s do snackbar
+- **Toggle Dicas**: ligue para mostrar emoji + cor em cada zona (útil pra explicar pra primeira vez)
+- **Toggle Modo descoberta**: troca o drag por toque pra abrir explicação — bom pra discutir alimento por alimento
 - **Stats** acumulam por dia (até virar o dia ou limpar o localStorage)
+- **Indicador X/4** no header mostra quantos grupos obrigatórios já foram preenchidos
 
 ## Testes
 
