@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monte o Prato da Criança
 
-## Getting Started
+Jogo educativo de _drag and drop_ para uma dinâmica de feira de nutrição. O participante monta o prato de almoço/jantar de uma criança de **7 a 8 meses** arrastando alimentos para as zonas corretas, e ao final recebe uma avaliação baseada nas regras do **Guia Alimentar para Crianças Brasileiras Menores de 2 Anos** (Ministério da Saúde).
 
-First, run the development server:
+> Otimizado para tablet em modo paisagem (testado no Galaxy Tab S9 FE, ~1280×800).
+
+## Como funciona
+
+A tela apresenta dois pratos:
+
+- **Prato grande** dividido em 4 quadrantes (1 alimento por zona):
+  - Cereais ou raízes e tubérculos
+  - Feijões
+  - Legumes e verduras
+  - Carnes e ovos
+- **Pratinho menor** ao lado, para uma fruta (complemento opcional)
+
+A coluna direita lista 53 alimentos disponíveis (apropriados e inapropriados, embaralhados a cada carregamento) que o participante arrasta para os pratos.
+
+Ao clicar em **Validar prato**, o jogo classifica o resultado em:
+
+| Nível | Condição |
+|---|---|
+| 🌟 Perfeito | 4 grupos obrigatórios + nenhum inapropriado |
+| ✓ Completo | 4 grupos obrigatórios, mas com algum inapropriado |
+| ⚠ Incompleto | Falta algum grupo obrigatório |
+| ✕ Inadequado | Falta grupo + tem inapropriados |
+
+E exibe, para cada alimento escolhido, se é adequado para a idade ou o motivo da inadequação (botulismo, açúcar, sódio, ultraprocessado etc.).
+
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router) + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [@dnd-kit](https://dndkit.com) para o drag-and-drop
+- [OpenMoji](https://openmoji.org) (CDN) para os ícones de alimentos
+
+## Como rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Outros scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build   # build de produção
+npm run start   # servidor de produção
+npm run lint    # ESLint
+```
 
-## Learn More
+## Estrutura
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── components/
+│   ├── Game.tsx              # Componente raiz do jogo (DnD context, estado)
+│   ├── Plate.tsx             # Prato circular com 4 quadrantes
+│   ├── Pot.tsx               # Pratinho lateral (frutas)
+│   ├── PlateZone.tsx         # Zona droppable genérica
+│   ├── Pool.tsx              # Lista de alimentos disponíveis
+│   ├── DraggableFood.tsx     # Card de alimento arrastável
+│   ├── FoodIcon.tsx          # Renderiza img/svg/emoji do alimento
+│   └── ValidationPanel.tsx   # Modal de resultado da validação
+├── lib/
+│   └── foods.ts              # Dataset de alimentos + validação
+├── layout.tsx
+└── page.tsx                  # Importa Game dinamicamente (ssr: false)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+O `Game` é importado via `next/dynamic` com `ssr: false` para evitar _hydration mismatch_ do `@dnd-kit` (gera IDs incrementais entre servidor e cliente).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Adicionando alimentos
 
-## Deploy on Vercel
+Edite `app/lib/foods.ts` e adicione uma entrada ao array `ALIMENTOS`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```ts
+{
+  id: "novo-alimento",
+  nome: "Nome exibido no card",
+  img: openmoji("1F34E"),       // codepoint hexadecimal do emoji
+  categoria: "frutas",          // ou null se inapropriado
+  apropriado: true,             // ou false
+  motivo: "...",                // obrigatório se apropriado=false
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Codepoints OpenMoji disponíveis em <https://openmoji.org>.
+
+## Créditos
+
+- **Conteúdo nutricional**: [Guia Alimentar para Crianças Brasileiras Menores de 2 Anos](https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_brasileiras_2anos.pdf) — Ministério da Saúde, 2019
+- **Ícones**: [OpenMoji](https://openmoji.org) (CC BY-SA 4.0)
