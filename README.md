@@ -175,6 +175,17 @@ npm test
 
 Cobertura: 13 testes para `validarPrato` (todos os níveis de resultado, deduplicação, ids inválidos) + invariantes do dataset (ids únicos, motivo presente em inapropriados, categoria presente em apropriados).
 
+## Documentação
+
+A pasta [`docs/`](docs/) contém material complementar:
+
+- [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) — visão técnica do projeto, fluxos de dados, decisões de arquitetura
+- [`CONTENT.md`](docs/CONTENT.md) — base nutricional, critérios de classificação dos alimentos e como adicionar novos
+- [`ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) — checklist WCAG 2.1 AA, gaps conhecidos, como testar
+- [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) — como hospedar e checklist pré-feira
+
+Para Claude/agentes de IA trabalhando no código, ver [`CLAUDE.md`](CLAUDE.md) com decisões importantes que não devem ser sobrescritas.
+
 ## Créditos
 
 - **Conteúdo nutricional**: [Guia Alimentar para Crianças Brasileiras Menores de 2 Anos](https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_brasileiras_2anos.pdf) — Ministério da Saúde, 2019
