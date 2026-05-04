@@ -1,6 +1,6 @@
-# Monte o Prato da Criança
+# Monte o Prato do Bebê
 
-Jogo educativo de _drag and drop_ para uma dinâmica de feira de nutrição. O participante monta o prato de almoço/jantar de uma criança de **7 a 8 meses** arrastando alimentos para as zonas corretas, e ao final recebe uma avaliação baseada nas regras do **Guia Alimentar para Crianças Brasileiras Menores de 2 Anos** (Ministério da Saúde).
+Jogo educativo de _drag and drop_ para uma dinâmica de feira de nutrição. O participante monta o prato de almoço/jantar de um bebê de **7 a 8 meses** arrastando alimentos para as zonas corretas, e ao final recebe uma avaliação baseada nas regras do **Guia Alimentar para Crianças Brasileiras Menores de 2 Anos** (Ministério da Saúde).
 
 PWA otimizado para tablet em modo paisagem (cenário principal de uso), com responsividade completa para celular (portrait/landscape) e desktop.
 

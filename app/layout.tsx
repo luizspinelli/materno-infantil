@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monte o Prato — Dinâmica de Nutrição Infantil",
+  title: "Monte o Prato do Bebê — Dinâmica de Nutrição Infantil",
   description:
-    "Jogo educativo de drag and drop para montar um prato adequado para crianças de 7 a 8 meses, baseado no Guia Alimentar do Ministério da Saúde.",
+    "Jogo educativo de drag and drop para montar um prato adequado para bebês de 7 a 8 meses, baseado no Guia Alimentar do Ministério da Saúde.",
   manifest: "/manifest.json",
   applicationName: "Monte o Prato",
   appleWebApp: {

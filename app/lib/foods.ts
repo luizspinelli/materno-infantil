@@ -214,7 +214,7 @@ export const ALIMENTOS: Alimento[] = [
     img: openmoji("2615"),
     categoria: null,
     apropriado: false,
-    motivo: "Cafeína não é recomendada para crianças pequenas.",
+    motivo: "Cafeína não é recomendada para bebês.",
   },
   {
     id: "suco-caixinha",
@@ -326,7 +326,7 @@ export function validarPrato(
       : "Prato perfeito! Contém os 4 grupos obrigatórios. Você ainda pode adicionar uma fruta como complemento da refeição.";
   } else if (pratoCompleto && inapropriados > 0) {
     nivel = "bom";
-    mensagem = `Os 4 grupos obrigatórios estão presentes, mas o prato contém ${inapropriados} alimento(s) que não devem ser oferecidos a crianças de 7 a 8 meses. Veja os detalhes abaixo.`;
+    mensagem = `Os 4 grupos obrigatórios estão presentes, mas o prato contém ${inapropriados} alimento(s) que não devem ser oferecidos a bebês de 7 a 8 meses. Veja os detalhes abaixo.`;
   } else if (!pratoCompleto && inapropriados === 0) {
     nivel = "incompleto";
     mensagem = `Os alimentos escolhidos são adequados, mas faltam ${obrigatoriosFaltando.length} grupo(s) obrigatório(s) para o almoço/jantar.`;

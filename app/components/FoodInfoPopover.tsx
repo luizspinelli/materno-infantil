@@ -55,7 +55,7 @@ export function FoodInfoPopover({ alimento, onClose }: Props) {
           )}
           <p className="text-sm text-slate-700 leading-snug">
             {alimento.apropriado
-              ? "Alimento adequado para crianças de 7 a 8 meses."
+              ? "Alimento adequado para bebês de 7 a 8 meses."
               : alimento.motivo}
           </p>
           <span

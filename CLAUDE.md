@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Monte o Prato da Criança — guia para o Claude
+# Monte o Prato do Bebê — guia para o Claude
 
 PWA Next.js de drag-and-drop educativo, baseado no **Guia Alimentar para Crianças Brasileiras Menores de 2 Anos** (Ministério da Saúde). Usado como dinâmica em feira de nutrição. Stakeholder principal: Amanda (nutricionista).
 

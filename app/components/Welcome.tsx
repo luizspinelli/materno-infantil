@@ -20,7 +20,7 @@ export function Welcome({ onStart }: Props) {
         <div className="text-5xl sm:text-6xl">🍽️</div>
         <div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-emerald-700 leading-tight">
-            Monte o Prato da Criança
+            Monte o Prato do Bebê
           </h1>
           <p className="mt-2 text-sm sm:text-base text-slate-600">
             Dinâmica baseada no <strong>Guia Alimentar para Crianças Brasileiras Menores de 2 Anos</strong> — Ministério da Saúde.
@@ -30,7 +30,7 @@ export function Welcome({ onStart }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left">
           <Step n="1" titulo="Escolha os alimentos" texto="Arraste cards para as 4 zonas do prato grande e, se quiser, uma fruta no pratinho." />
           <Step n="2" titulo="Cada zona aceita 1" texto="Solte um novo alimento sobre a zona para substituir o anterior." />
-          <Step n="3" titulo="Valide o prato" texto="Veja se montou um prato adequado para uma criança de 7 a 8 meses." />
+          <Step n="3" titulo="Valide o prato" texto="Veja se montou um prato adequado para um bebê de 7 a 8 meses." />
         </div>
 
         <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 w-full">

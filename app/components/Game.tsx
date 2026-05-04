@@ -346,10 +346,10 @@ export default function Game() {
                   title="Toque 3 vezes para opções da apresentadora"
                   className="text-base sm:text-2xl font-extrabold text-emerald-700 leading-none truncate cursor-pointer select-none"
                 >
-                  Monte o Prato da Criança
+                  Monte o Prato do Bebê
                 </h1>
                 <p className="hidden sm:inline text-xs text-slate-600 truncate">
-                  Crianças de <strong>7 a 8 meses</strong> · Guia Alimentar MS
+                  Bebês de <strong>7 a 8 meses</strong> · Guia Alimentar MS
                 </p>
               </div>
             </div>

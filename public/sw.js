@@ -1,7 +1,7 @@
-// Service worker para "Monte o Prato da Criança"
+// Service worker para "Monte o Prato do Bebê"
 // Faz cache do app shell e dos ícones do OpenMoji para funcionar offline.
 
-const VERSION = "v1";
+const VERSION = "v2";
 const APP_CACHE = `monte-o-prato-app-${VERSION}`;
 const ICONS_CACHE = `monte-o-prato-icons-${VERSION}`;
 

@@ -89,7 +89,7 @@ Não há `.env` necessário.
 
 ### Configurações ajustáveis pela apresentadora (em runtime)
 
-Acessíveis pelo **Painel da Apresentadora**: triplo toque no título "Monte o Prato da Criança" no header. Persiste em `localStorage`.
+Acessíveis pelo **Painel da Apresentadora**: triplo toque no título "Monte o Prato do Bebê" no header. Persiste em `localStorage`.
 
 | Configuração | Padrão | Opções |
 |---|---|---|

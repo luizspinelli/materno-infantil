@@ -1,6 +1,6 @@
 # Conteúdo nutricional
 
-Este documento descreve a base nutricional do dataset, suas fontes e os critérios usados para classificar cada alimento como adequado ou inadequado para crianças de **7 a 8 meses**.
+Este documento descreve a base nutricional do dataset, suas fontes e os critérios usados para classificar cada alimento como adequado ou inadequado para bebês de **7 a 8 meses**.
 
 > ⚠️ **Validação clínica pendente.** O dataset foi construído por engenharia, com base em interpretação do guia oficial. Antes de usar em feira ou em qualquer contexto educativo, peça à nutricionista responsável (Amanda) para revisar `app/lib/foods.ts` linha por linha.
 
@@ -8,7 +8,7 @@ Este documento descreve a base nutricional do dataset, suas fontes e os critéri
 
 **[Guia Alimentar para Crianças Brasileiras Menores de 2 Anos](https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_brasileiras_2anos.pdf)** — Ministério da Saúde, 2019.
 
-Especificamente a página 7, que define a estrutura do almoço/jantar para crianças entre 7 e 8 meses:
+Especificamente a página 7, que define a estrutura do almoço/jantar para bebês entre 7 e 8 meses:
 
 > É recomendado que o prato da criança tenha:
 > - 1 alimento do grupo dos cereais ou raízes e tubérculos;
