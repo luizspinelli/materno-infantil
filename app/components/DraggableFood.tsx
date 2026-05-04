@@ -11,6 +11,7 @@ type Props = {
   size?: number;
   showName?: boolean;
   onClick?: (alimento: Alimento) => void;
+  pulse?: boolean;
 };
 
 export function DraggableFood({
@@ -19,6 +20,7 @@ export function DraggableFood({
   size = 64,
   showName = true,
   onClick,
+  pulse = false,
 }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `${origem}:${alimento.id}`,
@@ -58,7 +60,10 @@ export function DraggableFood({
       style={style}
       {...listeners}
       {...attributes}
-      className="relative flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow border border-slate-200 group"
+      className={
+        "relative flex flex-col items-center justify-center gap-1 select-none rounded-xl bg-white p-2 shadow-sm hover:shadow-md hover:ring-2 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow border border-slate-200 group " +
+        (pulse ? "animate-tutorial-pulse" : "")
+      }
       title={`Arraste ${alimento.nome} para o prato`}
       aria-label={`${alimento.nome}. Arraste para uma zona do prato.`}
     >

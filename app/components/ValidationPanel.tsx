@@ -2,6 +2,7 @@
 
 import type { NivelPrato, Resultado } from "../lib/foods";
 import { CATEGORIAS } from "../lib/foods";
+import { useFocusTrap } from "../lib/useFocusTrap";
 import { FoodIcon } from "./FoodIcon";
 
 type Props = {
@@ -21,10 +22,17 @@ const ESTILO_NIVEL: Record<NivelPrato, { titulo: string; cor: string; bg: string
 export function ValidationPanel({ resultado, onClose, onTentarNovamente }: Props) {
   const { itens, grupos, apropriados, inapropriados, total, mensagem, nivel } = resultado;
   const estilo = ESTILO_NIVEL[nivel];
+  const trapRef = useFocusTrap<HTMLDivElement>({ enabled: true, onEscape: onClose });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="validation-title"
+    >
       <div
+        ref={trapRef}
         className="relative w-full max-w-6xl rounded-2xl bg-white shadow-2xl flex flex-col overflow-hidden"
         style={{ maxHeight: "min(95vh, 95dvh)" }}
       >
@@ -46,6 +54,7 @@ export function ValidationPanel({ resultado, onClose, onTentarNovamente }: Props
             <span className="text-2xl sm:text-3xl leading-none shrink-0">{estilo.icone}</span>
             <div className="flex-1 min-w-0 pr-8">
               <h2
+                id="validation-title"
                 className="text-base sm:text-xl font-bold leading-tight"
                 style={{ color: estilo.cor }}
               >

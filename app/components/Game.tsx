@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -13,7 +13,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import confetti from "canvas-confetti";
-import { ALIMENTOS, Categoria, validarPrato } from "../lib/foods";
+import { ALIMENTOS, CATEGORIAS, Categoria, validarPrato } from "../lib/foods";
 import { useIdleTimer } from "../lib/useIdleTimer";
 import { registrarValidacao } from "../lib/stats";
 import { Pool } from "./Pool";
@@ -24,10 +24,11 @@ import { ValidationPanel } from "./ValidationPanel";
 import { Welcome } from "./Welcome";
 import { FoodInfoPopover } from "./FoodInfoPopover";
 import { IdleWarning } from "./IdleWarning";
+import { Snackbar } from "./Snackbar";
 import type { Alimento, Resultado } from "../lib/foods";
 
-const IDLE_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutos sem interação → volta à tela inicial
-const IDLE_WARNING_MS = 10 * 1000; // últimos 10s mostram aviso com countdown
+const IDLE_TIMEOUT_MS = 3 * 60 * 1000;
+const IDLE_WARNING_MS = 10 * 1000;
 
 const ZONAS: Categoria[] = [
   "cereais",
@@ -36,6 +37,8 @@ const ZONAS: Categoria[] = [
   "legumes-verduras",
   "frutas",
 ];
+
+const OBRIGATORIAS: Categoria[] = ["cereais", "feijoes", "carnes-ovos", "legumes-verduras"];
 
 type PratoState = Record<Categoria, string[]>;
 
@@ -69,6 +72,16 @@ function dispararConfete() {
   })();
 }
 
+function vibrar(ms: number) {
+  try {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(ms);
+    }
+  } catch {
+    // sem suporte
+  }
+}
+
 export default function Game() {
   const [iniciado, setIniciado] = useState(false);
   const [prato, setPrato] = useState<PratoState>(PRATO_VAZIO);
@@ -78,14 +91,15 @@ export default function Game() {
   const [dicasAtivas, setDicasAtivas] = useState(false);
   const [alimentoInspecao, setAlimentoInspecao] = useState<Alimento | null>(null);
   const [avisoIdle, setAvisoIdle] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    actionLabel?: string;
+    onAction?: () => void;
+  } | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    // Long-press de 300ms pra iniciar drag em touch. Se o usuário mover
-    // mais de 15px durante esse delay, o gesto é cancelado e o navegador
-    // assume scroll/tap normal.
     useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 15 } }),
-    // Keyboard: Tab pra focar, Espaço/Enter pra pegar/soltar, setas pra navegar entre zonas
     useSensor(KeyboardSensor)
   );
 
@@ -144,15 +158,19 @@ export default function Game() {
       next[destino] = [alimentoId];
       return next;
     });
+
+    if (destino !== "pool") {
+      vibrar(20); // vibração curta confirmando o drop
+    }
   }
 
   function validar() {
     const r = validarPrato(prato);
     setResultado(r);
     registrarValidacao(r.nivel === "perfeito");
+    if (r.nivel === "perfeito") vibrar(60);
   }
 
-  // Dispara confete quando o resultado é "perfeito"
   useEffect(() => {
     if (resultado?.nivel === "perfeito") {
       dispararConfete();
@@ -169,16 +187,26 @@ export default function Game() {
     resetar();
   }
 
+  function limparComUndo() {
+    if (idsNoPrato.size === 0) return;
+    const snapshot = prato;
+    resetar();
+    setSnackbar({
+      message: "Prato limpo.",
+      actionLabel: "Desfazer",
+      onAction: () => setPrato(snapshot),
+    });
+  }
+
   function voltarAoInicio() {
     resetar();
     setModoDescoberta(false);
     setDicasAtivas(false);
     setIniciado(false);
     setAvisoIdle(false);
+    setSnackbar(null);
   }
 
-  // Volta à tela inicial após inatividade. 10s antes do reset mostra
-  // um aviso com countdown que pode ser cancelado tocando "Continuar".
   useIdleTimer(IDLE_TIMEOUT_MS, voltarAoInicio, iniciado, {
     warningMs: IDLE_WARNING_MS,
     onWarning: () => setAvisoIdle(true),
@@ -204,26 +232,65 @@ export default function Game() {
 
   const totalNoPrato = idsNoPrato.size;
 
+  // Progresso: quantos grupos obrigatórios já têm um alimento APROPRIADO
+  const progresso = useMemo(() => {
+    const lookup = new Map(ALIMENTOS.map((a) => [a.id, a]));
+    return OBRIGATORIAS.map((cat) => {
+      const ids = prato[cat];
+      const valido = ids.some((id) => {
+        const a = lookup.get(id);
+        return a?.apropriado === true;
+      });
+      return { cat, valido };
+    });
+  }, [prato]);
+
+  const gruposCompletos = progresso.filter((g) => g.valido).length;
+
+  // Tutorial inicial: anima o primeiro card até primeiro drag-end ou clique
+  const [tutorial, setTutorial] = useState(true);
+  const tutorialAcabouRef = useRef(false);
+  function dispensarTutorial() {
+    if (!tutorialAcabouRef.current) {
+      tutorialAcabouRef.current = true;
+      setTutorial(false);
+    }
+  }
+
   if (!iniciado) {
     return <Welcome onStart={() => setIniciado(true)} />;
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={(e) => {
+        dispensarTutorial();
+        handleDragStart(e);
+      }}
+      onDragEnd={handleDragEnd}
+    >
+      {/* Skip-link visível ao foco para usuários de teclado */}
+      <a
+        href="#prato"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-emerald-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold"
+      >
+        Pular para o prato
+      </a>
+
       <main
         className={
-          // Em portrait mobile: deixa o body rolar. Em landscape (qualquer device) e em md+: tela cheia sem scroll do body.
           "min-h-screen w-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-rose-50 animate-fade-in " +
           "landscape:h-screen landscape:overflow-hidden md:h-screen md:overflow-hidden"
         }
       >
         <div className="w-full flex flex-col px-2 sm:px-4 py-2 sm:py-3 landscape:h-full md:h-full">
-          {/* Header — sempre lado a lado em landscape, empilhado em portrait mobile */}
-          <header className="flex flex-col landscape:flex-row sm:flex-row landscape:items-center sm:items-center landscape:justify-between sm:justify-between gap-2 sm:gap-4 mb-2 sm:mb-3 shrink-0">
-            <div className="flex items-center gap-2 sm:gap-3">
+          <header className="flex flex-col landscape:flex-row sm:flex-row landscape:items-center sm:items-center landscape:justify-between sm:justify-between gap-2 sm:gap-3 mb-2 sm:mb-3 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <button
                 onClick={voltarAoInicio}
-                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 shrink-0"
+                aria-label="Voltar à tela inicial"
+                className="rounded-lg border border-slate-300 bg-white w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 text-sm sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center justify-center sm:gap-1.5 shrink-0"
                 title="Voltar à tela inicial"
               >
                 <span aria-hidden>←</span>
@@ -233,12 +300,14 @@ export default function Game() {
                 <h1 className="text-base sm:text-2xl font-extrabold text-emerald-700 leading-none truncate">
                   Monte o Prato da Criança
                 </h1>
-                <p className="text-[10px] sm:text-xs text-slate-600 truncate">
+                <p className="hidden sm:inline text-xs text-slate-600 truncate">
                   Crianças de <strong>7 a 8 meses</strong> · Guia Alimentar MS
                 </p>
               </div>
             </div>
+
             <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <ProgressoGrupos progresso={progresso} total={gruposCompletos} />
               <ToggleSwitch
                 label="Dicas"
                 description="Mostra ícones nas zonas vazias do prato"
@@ -254,16 +323,13 @@ export default function Game() {
             </div>
           </header>
 
-          {/* Container principal — vertical em portrait, lado a lado em landscape */}
           <div className="flex-1 flex portrait:flex-col landscape:flex-row gap-2 md:gap-4 min-h-0">
-            {/* Coluna prato — altura fixa em portrait pra não sobrepor o pool */}
             <section
+              id="prato"
               className={
                 "flex flex-col rounded-2xl bg-gradient-to-br from-amber-50/80 to-rose-50/80 " +
                 "border border-amber-200/40 p-2 sm:p-4 shadow-inner min-h-0 min-w-0 " +
-                // Portrait: altura limitada pra deixar espaço pro pool abaixo
                 "portrait:h-[52vh] " +
-                // Landscape: estica com o flex parent
                 "landscape:flex-1"
               }
             >
@@ -271,9 +337,7 @@ export default function Game() {
                 <div
                   className={
                     "shrink-0 " +
-                    // Portrait: limitado pela altura disponível dentro da section (52vh menos controles)
                     "portrait:w-[min(40vh,75vw,420px)] portrait:h-[min(40vh,75vw,420px)] " +
-                    // Landscape: limitado pela altura da viewport e largura do container
                     "landscape:w-[min(70vh,50vw,460px)] landscape:h-[min(70vh,50vw,460px)]"
                   }
                 >
@@ -304,8 +368,9 @@ export default function Game() {
                 </span>
                 <div className="flex gap-2">
                   <button
-                    onClick={resetar}
-                    className="rounded-lg border border-slate-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    onClick={limparComUndo}
+                    disabled={totalNoPrato === 0}
+                    className="rounded-lg border border-slate-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Limpar
                   </button>
@@ -313,8 +378,12 @@ export default function Game() {
                     onClick={validar}
                     disabled={totalNoPrato === 0}
                     aria-disabled={totalNoPrato === 0}
-                    title={totalNoPrato === 0 ? "Adicione alimentos ao prato primeiro" : "Validar o prato montado"}
-                    className="rounded-lg bg-emerald-600 px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    title={
+                      totalNoPrato === 0
+                        ? "Adicione alimentos ao prato primeiro"
+                        : "Validar o prato montado"
+                    }
+                    className="rounded-lg px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none transition-colors bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800"
                   >
                     Validar prato
                   </button>
@@ -322,19 +391,18 @@ export default function Game() {
               </div>
             </section>
 
-            {/* Coluna pool */}
             <section
               className={
                 "shrink-0 min-h-0 " +
-                // Portrait: largura full, altura fixa para scroll interno engajar
                 "portrait:w-full portrait:h-[38vh] " +
-                // Landscape: lado a lado com largura proporcional, estica com o flex
                 "landscape:w-[40%] landscape:max-w-[460px] landscape:min-w-[260px] landscape:h-auto"
               }
             >
               <Pool
                 alimentos={alimentosPool}
                 onAlimentoClick={modoDescoberta ? handleAlimentoClick : undefined}
+                tutorialAtivo={tutorial}
+                onTutorialDismiss={dispensarTutorial}
               />
             </section>
           </div>
@@ -351,7 +419,6 @@ export default function Game() {
           ) : null}
         </DragOverlay>
 
-        {/* Region pra leitor de tela anunciar drag/drop */}
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
           {alimentoAtivo ? `Arrastando ${alimentoAtivo.nome}` : ""}
         </div>
@@ -377,8 +444,50 @@ export default function Game() {
             onContinue={() => setAvisoIdle(false)}
           />
         )}
+
+        {snackbar && (
+          <Snackbar
+            message={snackbar.message}
+            actionLabel={snackbar.actionLabel}
+            onAction={snackbar.onAction}
+            onDismiss={() => setSnackbar(null)}
+          />
+        )}
       </main>
     </DndContext>
+  );
+}
+
+function ProgressoGrupos({
+  progresso,
+  total,
+}: {
+  progresso: { cat: Categoria; valido: boolean }[];
+  total: number;
+}) {
+  return (
+    <div
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 shrink-0"
+      title={`${total} de ${progresso.length} grupos obrigatórios completos`}
+      aria-label={`${total} de ${progresso.length} grupos obrigatórios completos`}
+    >
+      <span className="text-[11px] sm:text-xs font-bold text-slate-700">
+        {total}/{progresso.length}
+      </span>
+      <span className="flex gap-0.5">
+        {progresso.map((g) => {
+          const meta = CATEGORIAS[g.cat];
+          return (
+            <span
+              key={g.cat}
+              aria-hidden
+              className="w-2 h-2 rounded-full transition-colors"
+              style={{ backgroundColor: g.valido ? meta.cor : "#cbd5e1" }}
+            />
+          );
+        })}
+      </span>
+    </div>
   );
 }
 

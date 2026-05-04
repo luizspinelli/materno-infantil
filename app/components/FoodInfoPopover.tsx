@@ -2,6 +2,7 @@
 
 import type { Alimento } from "../lib/foods";
 import { CATEGORIAS } from "../lib/foods";
+import { useFocusTrap } from "../lib/useFocusTrap";
 import { FoodIcon } from "./FoodIcon";
 
 type Props = {
@@ -16,13 +17,18 @@ export function FoodInfoPopover({ alimento, onClose }: Props) {
       : "#16a34a"
     : "#b91c1c";
   const meta = alimento.categoria ? CATEGORIAS[alimento.categoria] : null;
+  const trapRef = useFocusTrap<HTMLDivElement>({ enabled: true, onEscape: onClose });
 
   return (
     <div
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="food-info-title"
       className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4"
     >
       <div
+        ref={trapRef}
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl border-t-4"
         style={{ borderColor: cor }}
@@ -36,7 +42,9 @@ export function FoodInfoPopover({ alimento, onClose }: Props) {
         </button>
         <div className="flex flex-col items-center text-center gap-3">
           <FoodIcon alimento={alimento} size={88} />
-          <h3 className="text-lg font-bold text-slate-800">{alimento.nome}</h3>
+          <h3 id="food-info-title" className="text-lg font-bold text-slate-800">
+            {alimento.nome}
+          </h3>
           {meta && (
             <span
               className="inline-block rounded-full px-3 py-0.5 text-xs font-semibold"
