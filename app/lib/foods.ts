@@ -33,7 +33,7 @@ export const CATEGORIAS: Record<
     obrigatorio: true,
   },
   "carnes-ovos": {
-    titulo: "Carnes e ovos",
+    titulo: "Proteínas",
     descricao: "Frango, ovo, carne, peixe, fígado…",
     cor: "#b91c1c",
     obrigatorio: true,

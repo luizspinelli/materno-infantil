@@ -34,7 +34,7 @@ export function Welcome({ onStart }: Props) {
         </div>
 
         <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 w-full">
-          <strong>Dica:</strong> O almoço/jantar deve ter <strong>cereal/tubérculo</strong>, <strong>feijão</strong>, <strong>carne ou ovo</strong>, e <strong>legumes/verduras</strong>. Fruta é um complemento opcional.
+          <strong>Dica:</strong> O almoço/jantar deve ter <strong>cereal/tubérculo</strong>, <strong>feijão</strong>, <strong>proteína</strong> (carne, ovo, peixe), e <strong>legumes/verduras</strong>. Fruta é um complemento opcional.
         </div>
 
         <button

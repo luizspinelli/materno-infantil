@@ -16,7 +16,7 @@ type Props = {
 const HINTS: Record<Categoria, { emoji: string; label: string }> = {
   cereais: { emoji: "🍚", label: "Cereal" },
   feijoes: { emoji: "🫘", label: "Feijão" },
-  "carnes-ovos": { emoji: "🍗", label: "Carne ou ovo" },
+  "carnes-ovos": { emoji: "🍗", label: "Proteína" },
   "legumes-verduras": { emoji: "🥦", label: "Legume" },
   frutas: { emoji: "🍎", label: "Fruta" },
 };
